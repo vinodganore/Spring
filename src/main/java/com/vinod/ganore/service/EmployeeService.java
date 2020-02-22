@@ -1,5 +1,7 @@
 package com.vinod.ganore.service;
 
+import com.vinod.ganore.dao.EmployeeRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.vinod.ganore.model.Employee;
 
@@ -9,6 +11,9 @@ import java.util.List;
 
 @Service
 public class EmployeeService {
+
+    @Autowired
+    private EmployeeRepository employeeRepository;
 
     //Arrays.asList is immutable , which is changed to mutable
     private List<Employee>  employeeList=  new ArrayList<>(Arrays.asList(
@@ -22,40 +27,38 @@ public class EmployeeService {
     public List<Employee> getAllEmployees()
     {
         System.out.println(" The List of Employees displayed successfully");
-        return employeeList;
+        List<Employee> empList = new ArrayList<>();
+        employeeRepository.findAll().forEach(empList :: add);
+
+        return empList;
     }
 
     public Employee getEmployee( String empId)
     {
-        return employeeList.stream().filter(t -> t.getEmpId().equals(empId)).findFirst().get();
+        return (Employee)employeeRepository.findById(empId).get();
     }
 
     public void addEmployee(Employee employee)
     {
         System.out.println(" The Employee :"+employee.getEmpName() +" has been Added successfully");
-        employeeList.add(employee);
+        employeeRepository.save(employee);
+
     }
 
     public Employee deleteEmployee(String empId)
     {
-        Employee deleteEmployee = employeeList.stream().filter(t ->t.getEmpId().equals(empId)).findFirst().get();
-        employeeList.remove(deleteEmployee);
+
+        Employee deleteEmployee = getEmployee(empId);
+        employeeRepository.delete(deleteEmployee);
         System.out.println(" The Employee :"+deleteEmployee.getEmpName() +" has been deleted successfully");
         return deleteEmployee;
-       // employeeList.removeIf(t ->t.getEmpId().equals(empId));
     }
 
     public List<Employee> updateEmployee(Employee employee , String empId)
     {
-        for(int i=0 ; i<employeeList.size();i++)
-        {
-            if(empId.equals(employeeList.get(i).getEmpId()))
-            {
-                employeeList.set(i,employee);
-                System.out.println(" Employee : "+employee.getEmpId() + "has been updated successfully" );
-                return employeeList;
-            }
-        }
-       return null;
+        employeeRepository.save(employee);
+
+        return getAllEmployees();
+
     }
 }

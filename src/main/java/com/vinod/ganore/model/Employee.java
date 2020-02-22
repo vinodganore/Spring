@@ -1,16 +1,22 @@
 package com.vinod.ganore.model;
 
 
+import org.hibernate.annotations.Table;
 import org.springframework.boot.jackson.JsonComponent;
 
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import java.io.Serializable;
 
-
+@Entity
 public class Employee implements Serializable {
+    @Id
     private  String empId;
     private  String empName;
     private  String empBatch;
     private  String empTech;
+
 
     public Employee() {
     }
